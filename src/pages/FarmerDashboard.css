@@ -1,0 +1,141 @@
+/* FarmerDashboard Component Styles */
+/* Add custom styles for the FarmerDashboard component here */
+
+.dashboard-wrapper {
+  background-color: var(--bg);
+  min-height: 100vh;
+  display: flex;
+}
+
+.dashboard-header {
+  /* Header styles */
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 1rem;
+  background-color: var(--bg);
+  overflow-y: auto;
+}
+
+/* Loading skeleton styles */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Stats cards enhancements */
+.stat-card-enhanced {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.stat-card-enhanced:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Chart containers */
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+}
+
+/* Announcements panel */
+.announcements-panel {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.announcement-item {
+  transition: background-color 0.2s ease;
+}
+
+.announcement-item:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+/* Table enhancements */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.data-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.data-table td {
+  padding: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f8f9ff;
+}
+
+/* Quick actions */
+.quick-action-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.quick-action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-color: rgba(46, 125, 50, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 0.75rem;
+  }
+  
+  .chart-container {
+    padding: 1rem;
+  }
+  
+  .stat-card-enhanced {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-wrapper {
+    flex-direction: column;
+  }
+  
+  aside {
+    position: static !important;
+    transform: none !important;
+    height: auto;
+    width: 100%;
+    position: relative;
+  }
+  
+  .mobile-overlay {
+    display: none !important;
+  }
+}
