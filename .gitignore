@@ -45,3 +45,5 @@ dist-ssr
 
 # Temporary token/debug scripts
 tmp_gen_token.js
+mcc_system_backup.sql
+

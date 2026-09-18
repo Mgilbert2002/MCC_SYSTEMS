@@ -29,7 +29,9 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173'
+}))
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
@@ -49,16 +51,46 @@ app.use('/api/stats', statsRoutes)
 sequelize.authenticate()
   .then(() => {
     console.log('Database connected')
+
     const queryInterface = sequelize.getQueryInterface()
+
     return queryInterface.describeTable('milk_deliveries')
-      .then(columns => Promise.all([
-        columns.expected_payment_date ? Promise.resolve() : queryInterface.addColumn('milk_deliveries', 'expected_payment_date', { type: DataTypes.DATEONLY, allowNull: true }),
-        columns.expected_payment_time ? Promise.resolve() : queryInterface.addColumn('milk_deliveries', 'expected_payment_time', { type: DataTypes.TIME, allowNull: true })
-      ]))
+      .then(columns => {
+        return Promise.all([
+          columns.expected_payment_date
+            ? Promise.resolve()
+            : queryInterface.addColumn(
+                'milk_deliveries',
+                'expected_payment_date',
+                {
+                  type: DataTypes.DATEONLY,
+                  allowNull: true
+                }
+              ),
+
+          columns.expected_payment_time
+            ? Promise.resolve()
+            : queryInterface.addColumn(
+                'milk_deliveries',
+                'expected_payment_time',
+                {
+                  type: DataTypes.TIME,
+                  allowNull: true
+                }
+              )
+        ])
+      })
       .then(() => queryInterface.describeTable('milk_quality_tests'))
       .then(columns => {
         if (!columns.specific_gravity) {
-          return queryInterface.addColumn('milk_quality_tests', 'specific_gravity', { type: DataTypes.DECIMAL(4, 3), allowNull: true })
+          return queryInterface.addColumn(
+            'milk_quality_tests',
+            'specific_gravity',
+            {
+              type: DataTypes.DECIMAL(4, 3),
+              allowNull: true
+            }
+          )
         }
       })
   })
@@ -68,31 +100,75 @@ sequelize.authenticate()
   })
   .then(() => {
     console.log('Database synchronized')
-    return Manager.findOne({ include: [{ model: User, as: 'user' }] })
+
+    return Manager.findOne({
+      include: [
+        {
+          model: User,
+          as: 'user'
+        }
+      ]
+    })
   })
   .then(async manager => {
     if (!manager) {
-      let managerUser = await User.findOne({ where: { email: 'manager@mcc.rw' } })
+      let managerUser = await User.findOne({
+        where: {
+          email: process.env.DEFAULT_MANAGER_EMAIL || 'manager@mcc.rw'
+        }
+      })
+
       if (!managerUser) {
         managerUser = await User.create({
           full_name: 'Default Manager',
-          email: 'manager@mcc.rw',
-          password: await bcrypt.hash('Manager@123', 10),
+          email: process.env.DEFAULT_MANAGER_EMAIL || 'manager@mcc.rw',
+          password: await bcrypt.hash(
+            process.env.DEFAULT_MANAGER_PASSWORD || 'CHANGE_THIS_PASSWORD',
+            10
+          ),
           role: 'manager',
           phone: '0000000000'
         })
       }
-      await Manager.create({ user_id: managerUser.user_id })
+
+      await Manager.create({
+        user_id: managerUser.user_id
+      })
     }
 
     const productCount = await Product.count()
+
     if (productCount === 0) {
-      const currentManager = await Manager.findOne({ include: [{ model: User, as: 'user' }] })
+      const currentManager = await Manager.findOne({
+        include: [
+          {
+            model: User,
+            as: 'user'
+          }
+        ]
+      })
+
       await Product.bulkCreate([
-        { product_name: 'Fresh Milk', current_price: 1500, unit: 'L', created_by: currentManager?.manager_id || 1 },
-        { product_name: 'Yogurt', current_price: 2500, unit: 'Kg', created_by: currentManager?.manager_id || 1 },
-        { product_name: 'Cheese', current_price: 5000, unit: 'Kg', created_by: currentManager?.manager_id || 1 }
+        {
+          product_name: 'Fresh Milk',
+          current_price: 1500,
+          unit: 'L',
+          created_by: currentManager?.manager_id || 1
+        },
+        {
+          product_name: 'Yogurt',
+          current_price: 2500,
+          unit: 'Kg',
+          created_by: currentManager?.manager_id || 1
+        },
+        {
+          product_name: 'Cheese',
+          current_price: 5000,
+          unit: 'Kg',
+          created_by: currentManager?.manager_id || 1
+        }
       ])
+
       console.log('Default products created')
     }
   })
