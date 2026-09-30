@@ -33,6 +33,12 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173'
 }))
 app.use(express.json())
+// Health check
+app.get("/", (req, res) => {
+  res.json({
+    message: "MCC Systems Backend is running successfully"
+  });
+});
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.use('/api/auth', authRoutes)
