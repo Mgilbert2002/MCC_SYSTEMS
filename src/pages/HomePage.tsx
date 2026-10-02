@@ -219,7 +219,7 @@ const handleRegister = async (e: React.FormEvent) => {
             </div>
           </div>
           <div className="hero-image">
-            <img src="public/milk_image.png" alt="Milk collection" />
+            <img src="/milk_image.png" alt="Milk collection" />
           </div>
         </div>
       </section>
