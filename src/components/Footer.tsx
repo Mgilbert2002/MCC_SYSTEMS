@@ -1,15 +1,4 @@
-import { useEffect, useState } from 'react'
-
 export const Footer = () => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString())
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date().toLocaleTimeString())
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [])
-
   return (
     <footer id="footer" className="app-footer">
       <div className="footer-content">
@@ -38,31 +27,31 @@ export const Footer = () => {
         <div className="footer-section">
           <h4>Quick Links</h4>
           <ul className="footer-links">
-            <li><a href="#home">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="/about">About Us</a></li>
-            <li><a href="/">Quality Standards</a></li>
-            <li><a href="/">Sustainability</a></li>
+            <li><a href="/about">Quality Standards</a></li>
+            <li><a href="/about">Sustainability</a></li>
           </ul>
         </div>
 
         <div className="footer-section">
           <h4>Our Services</h4>
           <ul className="footer-links">
-            <li><a href="/">Milk Reception</a></li>
-            <li><a href="/">Quality Control</a></li>
-            <li><a href="/">Processing & Packaging</a></li>
-            <li><a href="/">Distribution & Sales</a></li>
-            <li><a href="/">Farmer Support</a></li>
+            <li><a href="/about">Milk Reception</a></li>
+            <li><a href="/about">Quality Control</a></li>
+            <li><a href="/about">Processing & Packaging</a></li>
+            <li><a href="/about">Distribution & Sales</a></li>
+            <li><a href="/about">Farmer Support</a></li>
           </ul>
         </div>
 
         <div className="footer-section">
           <h4>Support</h4>
           <ul className="footer-links">
-            <li><a href="/">Help Center</a></li>
-            <li><a href="/">Contact Us</a></li>
-            <li><a href="/">Report an Issue</a></li>
-            <li><a href="/">Feedback</a></li>
+            <li><a href="/about">Help Center</a></li>
+            <li><a href="/about">Contact Us</a></li>
+            <li><a href="/about">Report an Issue</a></li>
+            <li><a href="/about">Feedback</a></li>
           </ul>
         </div>
 
@@ -82,7 +71,7 @@ export const Footer = () => {
           </div>
           <div className="contact-item">
             <i className="fas fa-clock"></i>
-            <span>Current Time: {time}</span>
+            <span>Current Time: {new Date().toLocaleTimeString()}</span>
           </div>
         </div>
       </div>
@@ -91,10 +80,10 @@ export const Footer = () => {
         <div className="footer-bottom-content">
           <p className="copyright">&copy; 2026 MCC System. All rights reserved.</p>
           <div className="footer-bottom-links">
-            <a href="/">Privacy Policy</a>
-            <a href="/">Terms of Service</a>
-            <a href="/">Cookie Policy</a>
-            <a href="/">Sitemap</a>
+            <a href="/about">Privacy Policy</a>
+            <a href="/about">Terms of Service</a>
+            <a href="/about">Cookie Policy</a>
+            <a href="/about">Sitemap</a>
           </div>
         </div>
       </div>

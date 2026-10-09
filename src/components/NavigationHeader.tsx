@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useLanguage } from '../context/LanguageContext'
 
@@ -20,7 +21,7 @@ export const NavigationHeader = () => {
           <a href="/about">{t('about')}</a>
           <a href="/#features">{t('features')}</a>
           <a href="/#stats">{t('statistics')}</a>
-          <a href="/#auth">{t('loginRegister')}</a>
+          <Link to="/login" className="nav-login-link">{t('loginRegister')}</Link>
           <a href="/#footer">{t('contact')}</a>
         </nav>
         <div className="user-info">

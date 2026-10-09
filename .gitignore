@@ -42,6 +42,7 @@ dist-ssr
 
 # User uploads
 /uploads/
+/server/uploads/
 
 # Temporary token/debug scripts
 tmp_gen_token.js
