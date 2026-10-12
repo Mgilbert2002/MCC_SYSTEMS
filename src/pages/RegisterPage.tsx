@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   Eye,
@@ -134,23 +134,6 @@ export const RegisterPage = () => {
 
   return (
     <div className="register-page">
-      <header className="register-header">
-        <div className="register-header-inner container">
-          <div className="brand-block">
-            <img src="/system_image.png" alt="MCC System logo" className="brand-logo" />
-            <div className="brand-copy">
-              <h1>MCC System</h1>
-              <p>Milk Collection Center Management System</p>
-            </div>
-          </div>
-
-          <div className="header-login">
-            <span>Already have an account?</span>
-            <Link to="/login" className="login-button">Login</Link>
-          </div>
-        </div>
-      </header>
-
       <main className="register-shell container single-panel-layout">
         <section className="register-card-panel">
           <div className="register-card">
@@ -271,7 +254,7 @@ export const RegisterPage = () => {
                   <input id="profile_image" type="file" accept="image/png,image/jpeg,image/jpg,image/gif" onChange={handleProfileChange} />
                 </div>
                 {profilePreview && <img src={profilePreview} alt="Profile preview" className="profile-preview" />}
-                <small>Allowed formats: JPG, PNG, GIF. Max size: 500KB.</small>
+                <small>Allowed formats: JPG, PNG,Max size: 500KB.</small>
               </div>
 
               <button type="submit" className="register-submit" disabled={isSubmitting}>

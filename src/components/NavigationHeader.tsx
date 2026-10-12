@@ -21,7 +21,7 @@ export const NavigationHeader = () => {
           <a href="/about">{t('about')}</a>
           <a href="/#features">{t('features')}</a>
           <a href="/#stats">{t('statistics')}</a>
-          <Link to="/login" className="nav-login-link">{t('loginRegister')}</Link>
+          <Link to="/login">{t('loginRegister')}</Link>
           <a href="/#footer">{t('contact')}</a>
         </nav>
         <div className="user-info">

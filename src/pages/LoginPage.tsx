@@ -1,223 +1,257 @@
 import './LoginPage.css'
 import { API_URL } from '../config/api'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Link } from 'react-router-dom'
-import { Mail, Lock, Eye, EyeOff, Shield, Truck, Users, Package, Leaf } from 'lucide-react'
+import { ArrowRight, CreditCard, Eye, EyeOff, Leaf, Lock, Mail, ShieldCheck, Truck, Users } from 'lucide-react'
 import { Footer } from '../components/Footer'
 
+const featureList = [
+  { icon: Truck, text: 'Track Collections', detail: 'In Real-Time' },
+  { icon: CreditCard, text: 'Manage Payments', detail: 'and Reports' },
+  { icon: Users, text: 'Connect with Farmers', detail: '& Buyers' },
+  { icon: Leaf, text: 'Build a Sustainable', detail: 'Dairy Future' }
+]
+
 export const LoginPage = () => {
-  const [loginData, setLoginData] = useState({
-    email: '',
-    password: ''
-  })
-  const [showLoginPassword, setShowLoginPassword] = useState(false)
-  const [loginError, setLoginError] = useState('')
+  const [loginData, setLoginData] = useState({ email: '', password: '' })
+  const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [status, setStatus] = useState<{ type: 'idle' | 'error' | 'success' | 'info'; message: string }>({
+    type: 'idle',
+    message: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoginError('')
+  useEffect(() => {
+    const saved = localStorage.getItem('mcc_remember_me') === 'true'
+    setRememberMe(saved)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('mcc_remember_me', String(rememberMe))
+  }, [rememberMe])
+
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault()
+
+    if (!loginData.email.trim() || !loginData.password.trim()) {
+      setStatus({ type: 'error', message: 'Please enter both your email and password.' })
+      return
+    }
+
+    setIsSubmitting(true)
+    setStatus({ type: 'info', message: 'Checking your credentials…' })
 
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: loginData.email,
+          email: loginData.email.trim(),
           password: loginData.password
         })
       })
 
-      let data
+      let data: any = null
       try {
         data = await response.json()
-      } catch (e) {
+      } catch {
         data = null
       }
 
       if (!response.ok) {
         if (data && Array.isArray(data.errors)) {
-          const errorMessages = data.errors.map((err: any) => err.msg).join(', ')
-          throw new Error(errorMessages || 'Validation failed')
+          throw new Error(data.errors.map((error: any) => error.msg).join(', '))
         }
-        
-        const message = data && data.message ? data.message : 'Login failed'
-        throw new Error(message)
+        throw new Error((data && data.message) || 'Login failed. Please check your credentials.')
       }
 
-      if (!data) {
-        throw new Error('Invalid JSON response')
+      if (!data || !data.user) {
+        throw new Error('Authentication response was invalid.')
       }
 
       login(data.user, data.userData)
       localStorage.setItem('token', data.token)
-      navigate(`/${data.user.role}`)
-    } catch (err) {
-      console.error('Login error:', err)
-      setLoginError(err instanceof Error ? err.message : 'Invalid credentials')
+      if (rememberMe) {
+        localStorage.setItem('mcc_remember_me', 'true')
+      } else {
+        localStorage.removeItem('mcc_remember_me')
+      }
+
+      setStatus({ type: 'success', message: 'Login successful. Redirecting…' })
+      const route = `/${data.user.role}`
+      window.setTimeout(() => navigate(route), 700)
+    } catch (error) {
+      console.error('Login error:', error)
+      setStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Invalid credentials. Please try again.'
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  const features = [
-    { icon: Truck, title: 'Track Collections in Real-Time', desc: 'Monitor milk deliveries from farm to center instantly' },
-    { icon: Package, title: 'Manage Payments and Reports', desc: 'Automated payments, invoices, and detailed analytics' },
-    { icon: Users, title: 'Connect with Farmers & Buyers', desc: 'Seamless communication across the dairy supply chain' },
-    { icon: Leaf, title: 'Build a Sustainable Dairy Future', desc: 'Eco-friendly practices for lasting agricultural impact' }
-  ]
-
   return (
-    <div className="login-page">
-      <div className="login-content">
-        {/* Left Side - MCC Dairy Experience */}
-        <div className="login-left">
-        <div className="left-content">
-          
+    <>
+    <main className="login-page">
+      <div className="login-shell">
+        <aside className="login-brand" aria-label="MCC dairy branding">
+          <div className="brand-header">
+            <div className="brand-mark" aria-hidden="true">
+              <span>M</span>
+            </div>
+            <div className="brand-copy">
+              <h1>MCC</h1>
+              <p>Milk Collection Center</p>
+            </div>
+          </div>
 
-          <div className="welcome-section">
+          <div className="brand-tagline">Fresh Milk • Healthy Tomorrow</div>
+
+          <div className="login-hero">
             <h2>Welcome Back!</h2>
             <p>Log in to continue managing your milk collection activities.</p>
           </div>
 
-          <div className="features-section">
-            {features.map((feature, index) => (
-              <div key={index} className="feature-item">
-                <div className="feature-icon">
-                  <feature.icon size={24} strokeWidth={2} />
-                </div>
-                <div className="feature-text">
-                  <h4>{feature.title}</h4>
-                  <p>{feature.desc}</p>
-                </div>
-              </div>
+          <ul className="feature-list" aria-label="MCC benefits">
+            {featureList.map(({ icon: Icon, text, detail }) => (
+              <li key={text} className="feature-item">
+                <span className="feature-icon" aria-hidden="true">
+                  <Icon size={18} strokeWidth={2.2} />
+                </span>
+                <span className="feature-copy">
+                  <strong>{text}</strong>
+                  <small>{detail}</small>
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
 
+          <div className="leaf-decoration" aria-hidden="true" />
+          <div className="brand-wave" aria-hidden="true" />
+        </aside>
 
-        </div>
-      </div>
-
-      {/* Right Side - Login Card */}
-      <div className="login-right">
-        <div className="right-content">
-          <div className="create-account-link">
+        <section className="login-form-panel">
+          <div className="register-link-row">
             <span>Don't have an account?</span>
-            <Link to="/register">Create an account</Link>
+            <Link to="/register">Register now <span aria-hidden="true">→</span></Link>
           </div>
 
-          <div className="login-header">
-            <div className="lock-icon">
-              <Lock size={32} strokeWidth={2} />
+          <div className="auth-card">
+            <div className="lock-badge" aria-hidden="true">
+              <Lock size={32} strokeWidth={2.2} />
             </div>
+
             <h2>Login to Your Account</h2>
-            <p>Enter your credentials to access your dashboard.</p>
-          </div>
+            <p className="auth-subtitle">Enter your credentials to access your dashboard.</p>
 
-          <form onSubmit={handleLogin} className="login-form">
-            {loginError && <div className="error-message">{loginError}</div>}
+            <form className="login-form" onSubmit={handleLogin} noValidate>
+              {status.type !== 'idle' && (
+                <div className={`status-message ${status.type}`} role="alert">
+                  {status.message}
+                </div>
+              )}
 
-            <div className="form-group">
-              <label htmlFor="email">Email Address</label>
-              <div className="input-wrapper">
-                <Mail size={20} strokeWidth={2} />
-                <input
-                  type="email"
-                  id="email"
-                  value={loginData.email}
-                  onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                  placeholder="Enter your email"
-                  required
-                  autoComplete="email"
-                />
+              <div className="form-group">
+                <label htmlFor="email">Email Address</label>
+                <div className="input-shell">
+                  <Mail size={18} strokeWidth={2} className="input-icon" />
+                  <input
+                    id="email"
+                    type="email"
+                    value={loginData.email}
+                    onChange={(event) => setLoginData((current) => ({ ...current, email: event.target.value }))}
+                    placeholder="Enter your email"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <div className="input-shell password-shell">
+                  <Lock size={18} strokeWidth={2} className="input-icon" />
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={loginData.password}
+                    onChange={(event) => setLoginData((current) => ({ ...current, password: event.target.value }))}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-options">
+                <label className="remember-me">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(event) => setRememberMe(event.target.checked)}
+                  />
+                  <span>Remember me</span>
+                </label>
+                <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
+              </div>
+
+              <button type="submit" className="primary-btn" disabled={isSubmitting || !loginData.email.trim() || !loginData.password.trim()}>
+                <span>{isSubmitting ? 'Logging in...' : 'Login'}</span>
+                <ArrowRight size={18} strokeWidth={2.2} />
+              </button>
+            </form>
+
+            <div className="divider"><span>Or continue with</span></div>
+
+            <div className="social-buttons">
+              <button type="button" className="social-btn" disabled title="Google sign-in is not configured yet">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="#4285F4" d="M21.6 12.23c0-.67-.06-1.31-.19-1.92H12v3.63h5.39a4.6 4.6 0 0 1-1.99 3.02v2.52h3.22c1.89-1.74 2.98-4.3 2.98-7.25Z" />
+                  <path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.61-2.44l-3.22-2.52c-.9.6-2.05.96-3.39.96-2.6 0-4.81-1.75-5.6-4.11H.8v2.65A10 10 0 0 0 12 22Z" />
+                  <path fill="#FBBC05" d="M6.4 19.86A6.12 6.12 0 0 1 6 17.2V14.5H2.66A9.97 9.97 0 0 0 2 12c0-1.63.39-3.17 1.08-4.5H6.4v2.7A5.13 5.13 0 0 1 12 8.7c1.31 0 2.49.46 3.42 1.35l2.57-2.57A8.77 8.77 0 0 0 12 3.5a10 10 0 0 0-9.2 5.5l3.6 2.8A6.1 6.1 0 0 1 12 8.7c1.53 0 2.94.54 4.03 1.6l2.57-2.57A8.8 8.8 0 0 0 12 3.5C7.46 3.5 3.4 5.96 1.5 9.75L.7 12.18A10 10 0 0 0 12 22c2.7 0 4.96-.9 6.61-2.44l-3.22-2.52c-.9.6-2.05.96-3.39.96-2.6 0-4.81-1.75-5.6-4.11H.8v2.65A10 10 0 0 0 12 22Z" />
+                  <path fill="#EA4335" d="M12 8.7c1.53 0 2.94.54 4.03 1.6l2.57-2.57A8.77 8.77 0 0 0 12 3.5C8.82 3.5 6.12 5.3 4.9 7.9l2.99 2.33A5.08 5.08 0 0 1 12 8.7Z" />
+                </svg>
+                <span>Google</span>
+              </button>
+
+              <button type="button" className="social-btn" disabled title="Microsoft sign-in is not configured yet">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="#F25022" d="M2 2h9.5v9.5H2z"/>
+                  <path fill="#00A4EF" d="M12.5 2H22v9.5h-9.5z"/>
+                  <path fill="#7FBA00" d="M2 12.5h9.5V22H2z"/>
+                  <path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/>
+                </svg>
+                <span>Microsoft</span>
+              </button>
+            </div>
+
+            <div className="security-box">
+              <div className="security-icon" aria-hidden="true">
+                <ShieldCheck size={20} strokeWidth={2.2} />
+              </div>
+              <div className="security-copy">
+                <strong>Your data is safe and secure</strong>
+                <p>We use industry-standard security measures.</p>
               </div>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <div className="input-wrapper">
-                <Lock size={20} strokeWidth={2} />
-                <input
-                  type={showLoginPassword ? 'text' : 'password'}
-                  id="password"
-                  value={loginData.password}
-                  onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                  placeholder="Enter your password"
-                  required
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  className="toggle-password"
-                  onClick={() => setShowLoginPassword(!showLoginPassword)}
-                  aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showLoginPassword ? <EyeOff size={20} strokeWidth={2} /> : <Eye size={20} strokeWidth={2} />}
-                </button>
-              </div>
-            </div>
-
-            <div className="form-options">
-              <label className="checkbox-wrapper">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
-                <span className="checkmark"></span>
-                <span>Remember me</span>
-              </label>
-              <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
-            </div>
-
-            <button type="submit" className="btn-login" disabled={!loginData.email || !loginData.password}>
-              <span>Login</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-          </form>
-
-          <div className="divider">
-            <span>Or continue with</span>
           </div>
-
-          <div className="social-buttons">
-            <button type="button" className="social-btn google" disabled>
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              <span>Google</span>
-            </button>
-            <button type="button" className="social-btn microsoft" disabled>
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="#F25022" d="M16.53 11.67H8.91V22.5H0V11.67H0V0h8.91v11.67z"/>
-                <path fill="#7FBA00" d="M24 11.67H16.38V22.5H7.47V11.67H0V0h7.47v11.67h8.91v11.67z"/>
-                <path fill="#00A4EF" d="M24 0h-8.91v11.67h8.91V0zm-8.91 22.5h8.91V11.67H15.09V22.5z"/>
-                <path fill="#FFB900" d="M7.47 0H0v22.5h7.47V11.67H15.09V0H7.47z"/>
-              </svg>
-              <span>Microsoft</span>
-            </button>
-          </div>
-
-          <div className="security-message">
-            <div className="security-icon">
-              <Shield size={20} strokeWidth={2} />
-            </div>
-            <div className="security-text">
-              <strong>Your data is safe and secure</strong>
-              <p>We use industry-standard security measures.</p>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
     <Footer />
-  </div>
+    </>
   )
 }

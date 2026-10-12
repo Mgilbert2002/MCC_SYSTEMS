@@ -5,6 +5,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
 import { AboutPage } from './pages/AboutPage'
 import { UnauthorizedPage, ManagerDashboard } from './pages/DashboardPages'
 import { FarmerDashboard } from './pages/FarmerDashboard'
@@ -27,14 +28,16 @@ function AppContent() {
   const location = useLocation();
   const isFarmerRoute = location.pathname.startsWith('/farmer');
   const isOperatorRoute = location.pathname.startsWith('/operator');
+  const hideGlobalHeader = ['/forgot-password'].includes(location.pathname);
 
   return (
     <>
-      {!isFarmerRoute && !isOperatorRoute && <NavigationHeader />}
+      {!isFarmerRoute && !isOperatorRoute && !hideGlobalHeader && <NavigationHeader />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
