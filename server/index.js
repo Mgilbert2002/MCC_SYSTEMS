@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url'
 import { sequelize } from './db.js'
 import './models.js'
 import authRoutes from './routes/auth.js'
+import forgotPasswordRoutes from './routes/forgotPassword.js'
 import profileRoutes from './routes/profile.js'
 import deliveryRoutes from './routes/deliveries.js'
 import qualityRoutes from './routes/quality.js'
@@ -61,6 +62,7 @@ app.get("/", (req, res) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.use('/api/auth', authRoutes)
+app.use('/api/auth', forgotPasswordRoutes)
 app.use('/api/profile', profileRoutes)
 app.use('/api/deliveries', deliveryRoutes)
 app.use('/api/farmers', farmersRoutes)

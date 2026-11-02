@@ -29,7 +29,7 @@ export const AboutPage = () => {
   ]
 
   return (
-    <div className="page about-page">
+    <div className="about-page">
       <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
 
       <div className="about-hero">

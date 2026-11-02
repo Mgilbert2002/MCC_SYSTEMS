@@ -6,13 +6,6 @@ import { useAuth } from '../context/AuthContext'
 import { ArrowRight, CreditCard, Eye, EyeOff, Leaf, Lock, Mail, ShieldCheck, Truck, Users } from 'lucide-react'
 import { Footer } from '../components/Footer'
 
-const featureList = [
-  { icon: Truck, text: 'Track Collections', detail: 'In Real-Time' },
-  { icon: CreditCard, text: 'Manage Payments', detail: 'and Reports' },
-  { icon: Users, text: 'Connect with Farmers', detail: '& Buyers' },
-  { icon: Leaf, text: 'Build a Sustainable', detail: 'Dairy Future' }
-]
-
 export const LoginPage = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
@@ -118,21 +111,14 @@ export const LoginPage = () => {
           </div>
 
           <ul className="feature-list" aria-label="MCC benefits">
-            {featureList.map(({ icon: Icon, text, detail }) => (
-              <li key={text} className="feature-item">
-                <span className="feature-icon" aria-hidden="true">
-                  <Icon size={18} strokeWidth={2.2} />
-                </span>
-                <span className="feature-copy">
-                  <strong>{text}</strong>
-                  <small>{detail}</small>
-                </span>
-              </li>
-            ))}
+            <li><Truck size={15} /> Track collections in realtime</li>
+            <li><CreditCard size={15} /> manage payments and report</li>
+            <li><Users size={15} /> connect with formers and buyers</li>
+            <li><Leaf size={15} /> build a sustainnable daily future</li>
           </ul>
 
-          <div className="leaf-decoration" aria-hidden="true" />
-          <div className="brand-wave" aria-hidden="true" />
+          {/* <div className="leaf-decoration" aria-hidden="true" />
+          <div className="brand-wave" aria-hidden="true" /> */}
         </aside>
 
         <section className="login-form-panel">
@@ -214,30 +200,6 @@ export const LoginPage = () => {
               </button>
             </form>
 
-            <div className="divider"><span>Or continue with</span></div>
-
-            <div className="social-buttons">
-              <button type="button" className="social-btn" disabled title="Google sign-in is not configured yet">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path fill="#4285F4" d="M21.6 12.23c0-.67-.06-1.31-.19-1.92H12v3.63h5.39a4.6 4.6 0 0 1-1.99 3.02v2.52h3.22c1.89-1.74 2.98-4.3 2.98-7.25Z" />
-                  <path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.61-2.44l-3.22-2.52c-.9.6-2.05.96-3.39.96-2.6 0-4.81-1.75-5.6-4.11H.8v2.65A10 10 0 0 0 12 22Z" />
-                  <path fill="#FBBC05" d="M6.4 19.86A6.12 6.12 0 0 1 6 17.2V14.5H2.66A9.97 9.97 0 0 0 2 12c0-1.63.39-3.17 1.08-4.5H6.4v2.7A5.13 5.13 0 0 1 12 8.7c1.31 0 2.49.46 3.42 1.35l2.57-2.57A8.77 8.77 0 0 0 12 3.5a10 10 0 0 0-9.2 5.5l3.6 2.8A6.1 6.1 0 0 1 12 8.7c1.53 0 2.94.54 4.03 1.6l2.57-2.57A8.8 8.8 0 0 0 12 3.5C7.46 3.5 3.4 5.96 1.5 9.75L.7 12.18A10 10 0 0 0 12 22c2.7 0 4.96-.9 6.61-2.44l-3.22-2.52c-.9.6-2.05.96-3.39.96-2.6 0-4.81-1.75-5.6-4.11H.8v2.65A10 10 0 0 0 12 22Z" />
-                  <path fill="#EA4335" d="M12 8.7c1.53 0 2.94.54 4.03 1.6l2.57-2.57A8.77 8.77 0 0 0 12 3.5C8.82 3.5 6.12 5.3 4.9 7.9l2.99 2.33A5.08 5.08 0 0 1 12 8.7Z" />
-                </svg>
-                <span>Google</span>
-              </button>
-
-              <button type="button" className="social-btn" disabled title="Microsoft sign-in is not configured yet">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path fill="#F25022" d="M2 2h9.5v9.5H2z"/>
-                  <path fill="#00A4EF" d="M12.5 2H22v9.5h-9.5z"/>
-                  <path fill="#7FBA00" d="M2 12.5h9.5V22H2z"/>
-                  <path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/>
-                </svg>
-                <span>Microsoft</span>
-              </button>
-            </div>
-
             <div className="security-box">
               <div className="security-icon" aria-hidden="true">
                 <ShieldCheck size={20} strokeWidth={2.2} />
@@ -248,6 +210,9 @@ export const LoginPage = () => {
               </div>
             </div>
           </div>
+
+          <div className="leaf-decoration" aria-hidden="true" />
+          <div className="brand-wave" aria-hidden="true" />
         </section>
       </div>
     </main>
